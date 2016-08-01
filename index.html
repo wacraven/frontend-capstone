@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Pokemon Golden Silver</title>
+	<link rel="icon" type="image/png" href="/assets/favicon.png">
+	<link rel="stylesheet" href="/node_modules/materialize-css/dist/css/materialize.min.css">
+	<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+	<div class="container">
+		<img id="pikaLogo" class="pkmnHeader-small hidden" src="assets/pikachu.gif">
+		<img id="pkmnLogo" class="pkmnHeader-big" src="assets/logo.png" alt="Pokemon Golden Silver">
+		<a id="logOutBtn" class="waves-effect waves-light btn-large hidden">Sign Out</a>
+		<div class="center">
+			<a id="loginBtn" class="waves-effect waves-light btn-large">Begin your Journey!</a>
+		</div>
+
+		<div id="gameDiv" class="hidden">
+			
+		</div>
+	</div>
+
+	<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="/node_modules/materialize-css/dist/js/materialize.min.js"></script>
+	<script src="/node_modules/phaser/build/phaser.min.js"></script>
+	<script src="/node_modules/phaser/dist/modules/scale.js"></script>
+	<script src="/js/eventListeners.js"></script>
+	<script src="/js/main.js"></script>
+</body>
+</html>
