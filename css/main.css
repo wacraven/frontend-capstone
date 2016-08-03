@@ -14,20 +14,20 @@ canvas {
 }
 
 .container {
-  width: 800px;
+  width: 400px;
 }
 
 .pkmnHeader-big {
   display: block;
   margin: auto;
-  width: 500px;
-  margin-top: 100px;
-  margin-bottom: 100px;
+  width: 250px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 }
 
 .pkmnHeader-small {
   display: inline-block;
-  height: 100px;
+  height: 50px;
 }
 
 .hidden {
