@@ -77,8 +77,8 @@ var main = {
 	    cursors = game.input.keyboard.createCursorKeys();
 
 	    game.actionKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-	    game.FirebaseURL = 'https://pokemon-golden-silver.firebaseio.com'
-		game.userId = "1A";
+	    // game.FirebaseURL = 'https://pokemon-golden-silver.firebaseio.com'
+		// game.userId = "1A";
 	},
 
 	update: function() {

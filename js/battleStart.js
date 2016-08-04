@@ -33,7 +33,7 @@ var wildBattleStart = {
 		var encountered = location[Math.floor(Math.random() * location.length)]
 		$.ajax({
 			// url: `http://pokeapi.co/api/v2/pokemon/${encountered}`
-			url: `${game.FirebaseURL}//backupPokemon/.json?orderBy="id"&equalTo=${encountered}`
+			url: `${game.FirebaseURL}/backupPokemon/.json?orderBy="id"&equalTo=${encountered}`
 		})
 		.done(function(result) {
 			wildBattleStart.battleSetup(result);
@@ -88,7 +88,6 @@ var wildBattleStart = {
 			url: `${game.FirebaseURL}/pokemon/.json?orderBy="trainerID"&equalTo="${game.userId}"`
 		})
 		.done(function(result) {
-			console.log("Trainer Loaded!", result);
 			wildBattleStart.trainerPokemonSort(result);
 		})
 		.fail(function() {
@@ -101,6 +100,7 @@ var wildBattleStart = {
 		for(var pokemon in result){
 		    game.partyPokemon.push(result[pokemon]);
 		 }
+		console.log("Trainer Loaded!", game.partyPokemon);
 
 	}
 }

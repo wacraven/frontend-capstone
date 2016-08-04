@@ -8,8 +8,41 @@ var wildPkmnBattle = {
 		var background = game.add.tileSprite(0, 0, 400, 240, "battleBG");
 		game.wildPokemonSprite = game.add.sprite(285, 100, `${game.wildPokemon.commonName}-front`)
 		game.trainerPokemonSprite = game.add.sprite(40, 175, `${game.currentPokemon.commonName}-back`)
-		// wildPokemonSprite.scale.setTo(1.25, 1.25)
 		game.trainerPokemonSprite.scale.setTo(1.5, 1.5)
+		game.trainerInfoBox = game.add.sprite(175, 165, 'trainerInfoBox');
+		game.trainerPokemonHealthBarConfig = {
+		    width: 92,
+		    height: 4,
+		    x: 314,
+		    y: 191,
+		    bg: {
+		      color: '#496b4a'
+		    },
+		    bar: {
+		      color: '#FEFF03'
+		    },
+		    animationDuration: 200,
+		    flipped: false
+		};
+		game.trainerPokemonHealthBar = new HealthBar(this.game, game.trainerPokemonHealthBarConfig);
+		var trainerPokemonInfoName = game.add.text(210, 170, `${game.currentPokemon.commonName.capitalize()}`, { font: 'bold 11px Arial', fill: 'black' }) 
+		game.enemyInfoBox = game.add.sprite(25, 60, 'enemyInfoBox');
+		game.wildPokemonHealthBarConfig = {
+		    width: 94,
+		    height: 4,
+		    x: 151,
+		    y: 88,
+		    bg: {
+		      color: '#496b4a'
+		    },
+		    bar: {
+		      color: '#FEFF03'
+		    },
+		    animationDuration: 200,
+		    flipped: false
+		};
+		game.wildPokemonHealthBar = new HealthBar(this.game, game.wildPokemonHealthBarConfig);
+		var wildPokemonInfoName = game.add.text(40, 65, `${game.wildPokemon.commonName.capitalize()}`, { font: 'bold 11px Arial', fill: 'black' }) 
 
 		//alert box created on topmost layer
 		var alertBox = game.add.tileSprite(0, 220, 400, 80, "alertBox");
@@ -26,10 +59,18 @@ var wildPkmnBattle = {
 		game.selectTimer = Date.now() + 500
 	},
 
+	availablePokemon: function() {
+		for (var i = 0; i < game.partyPokemon.length; i++) {
+			if (game.partyPokemon[i].currentHp > 0) {
+				return i;
+			};
+		};
+	},
+
 	battleOptions: function() {
 		// Display options
 		game.battleTextDefault.visible = true;
-		var trainerPokemonDisplayName = game.partyPokemon[0].commonName;
+		var trainerPokemonDisplayName = game.currentPokemon.commonName;
 		trainerPokemonDisplayName = trainerPokemonDisplayName.capitalize();
 		game.battleTextDefault.setText(`What will ${trainerPokemonDisplayName} do?`)
 		game.optionBox = game.add.tileSprite(200, 220, 200, 80, "optionBox");
@@ -58,10 +99,6 @@ var wildPkmnBattle = {
 	        font: 'bold 14px Arial',
 	        fill: 'black'
 	    });
-	},
-
-	availablePokemon: function() {
-		return 0;
 	},
 
 	fightMovesOptions: function() {
@@ -113,7 +150,7 @@ var wildPkmnBattle = {
 		setTimeout(function() {
 			game.pokeballSprite.animations.play('pokeballWobble')
 			var pokeballRoll = Math.floor(Math.random() * 100 + 1)
-			var wildPokemonHealth = ((game.wildPokemon.baseHealth - game.wildPokemon.currentHealth)/((game.wildPokemon.baseHealth + game.wildPokemon.currentHealth)/2)) * 100
+			var wildPokemonHealth = ((game.wildPokemon.baseHp - game.wildPokemon.currentHp)/((game.wildPokemon.baseHp + game.wildPokemon.currentHp)/2)) * 100
 			if (wildPokemonHealth >= pokeballRoll) {
 				game.battleTextAction.setText(`Gotcha! ${game.wildPokemon.commonName.capitalize()} was caught!`);
 				game.wildPokemon.trainerID = game.userId;
@@ -151,8 +188,8 @@ var wildPkmnBattle = {
 		
 	},
 
-	trainerPokemonAtck: function() {
-		
+	trainerPokemonAtck: function(move) {
+		game.currentPokemon
 	},
 
 	wildPokemonAtck: function() {
@@ -160,6 +197,10 @@ var wildPkmnBattle = {
 	},
 
 	update: function() {
+
+		//updat health bars
+		game.trainerPokemonHealthBar.setPercent(100 - (((game.currentPokemon.baseHp - game.currentPokemon.currentHp)/((game.currentPokemon.baseHp + game.currentPokemon.currentHp)/2)) * 100))
+		game.wildPokemonHealthBar.setPercent(100 - (((game.wildPokemon.baseHp - game.wildPokemon.currentHp)/((game.wildPokemon.baseHp + game.wildPokemon.currentHp)/2)) * 100))
 
 		// check to see where the selector is when spacebar is pressed
 		if (game.actionKey.isDown && game.selector.visible === true && Date.now() > game.selectTimer) {
@@ -171,7 +212,7 @@ var wildPkmnBattle = {
 				game.selectTimer = Date.now() + 1000;
 				game.battleTextDefault.setText('This feature is not yet available');
 				setTimeout(function() {
-					var trainerPokemonDisplayName = game.partyPokemon[0].commonName;
+					var trainerPokemonDisplayName = game.currentPokemon.commonName;
 					trainerPokemonDisplayName = trainerPokemonDisplayName.capitalize();
 					game.battleTextDefault.setText(`What will ${trainerPokemonDisplayName} do?`);
 				}, 3000)
@@ -199,7 +240,7 @@ var wildPkmnBattle = {
 					game.selectTimer = Date.now() + 1000;
 					game.battleTextDefault.setText("Couldn't escape!");
 					setTimeout(function() {
-						var trainerPokemonDisplayName = game.partyPokemon[0].commonName;
+						var trainerPokemonDisplayName = game.currentPokemon.commonName;
 						trainerPokemonDisplayName = trainerPokemonDisplayName.capitalize();
 						game.battleTextDefault.setText(`What will ${trainerPokemonDisplayName} do?`);
 					}, 3000)				}

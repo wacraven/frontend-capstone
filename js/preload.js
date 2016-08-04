@@ -27,6 +27,8 @@ var preloadState = {
 		game.load.image('alertBox', '/assets/maps/battleBackgrounds/alertBox.png');
 		game.load.image('optionBox', '/assets/maps/battleBackgrounds/optionBox.png');
 		game.load.image('selector', '/assets/maps/battleBackgrounds/selector.png');
+		game.load.image('trainerInfoBox', '/assets/maps/battleBackgrounds/trainerInfo.png');
+		game.load.image('enemyInfoBox', '/assets/maps/battleBackgrounds/enemyInfo.png');
 		game.load.spritesheet('pokeball', '/assets/maps/battleBackgrounds/pokeball.png', 16, 15);
 
 		//load front sprites
