@@ -33,7 +33,7 @@ var wildBattleStart = {
 		var encountered = location[Math.floor(Math.random() * location.length)]
 		$.ajax({
 			// url: `http://pokeapi.co/api/v2/pokemon/${encountered}`
-			url: `https://pokemon-golden-silver.firebaseio.com/backupPokemon/.json?orderBy="id"&equalTo=${encountered}`
+			url: `${game.FirebaseURL}//backupPokemon/.json?orderBy="id"&equalTo=${encountered}`
 		})
 		.done(function(result) {
 			wildBattleStart.battleSetup(result);
@@ -66,6 +66,12 @@ var wildBattleStart = {
 		this.baseDef = game.wildPokemonArray[0].stats[3].base_stat;
 		this.baseAtck = game.wildPokemonArray[0].stats[4].base_stat;
 		this.baseHp = game.wildPokemonArray[0].stats[5].base_stat;
+		this.currentSpeed = game.wildPokemonArray[0].stats[0].base_stat;
+		this.currentSpecDef = game.wildPokemonArray[0].stats[1].base_stat;
+		this.currentSpecAtck = game.wildPokemonArray[0].stats[2].base_stat;
+		this.currentDef = game.wildPokemonArray[0].stats[3].base_stat;
+		this.currentAtck = game.wildPokemonArray[0].stats[4].base_stat;
+		this.currentHp = game.wildPokemonArray[0].stats[5].base_stat;
 		// this.move1 = game.wildPokemonArray[0].moves[0].move.name;
 		// this.move2 = game.wildPokemonArray[0].moves[1].move.name;
 		this.move1 = "tackle"
@@ -78,10 +84,8 @@ var wildBattleStart = {
 	// },
 
 	trainerPokemonGet: function() {
-		var FirebaseURL = 'https://pokemon-golden-silver.firebaseio.com'
-		var userId = "1A";
 		$.ajax({
-			url: `${FirebaseURL}/pokemon/.json?orderBy="trainerID"&equalTo="${userId}"`
+			url: `${game.FirebaseURL}/pokemon/.json?orderBy="trainerID"&equalTo="${game.userId}"`
 		})
 		.done(function(result) {
 			console.log("Trainer Loaded!", result);

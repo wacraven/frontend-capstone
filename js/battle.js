@@ -3,12 +3,13 @@
 var wildPkmnBattle = {
 	create: function() {
 		game.currentPokemon = game.partyPokemon[wildPkmnBattle.availablePokemon()];
+		game.turnCounter = 1;
 		//create visuals
 		var background = game.add.tileSprite(0, 0, 400, 240, "battleBG");
-		var wildPokemonSprite = game.add.sprite(285, 100, `${game.wildPokemon.commonName}-front`)
-		var trainerPokemonSprite = game.add.sprite(40, 175, `${game.currentPokemon.commonName}-back`)
+		game.wildPokemonSprite = game.add.sprite(285, 100, `${game.wildPokemon.commonName}-front`)
+		game.trainerPokemonSprite = game.add.sprite(40, 175, `${game.currentPokemon.commonName}-back`)
 		// wildPokemonSprite.scale.setTo(1.25, 1.25)
-		trainerPokemonSprite.scale.setTo(1.5, 1.5)
+		game.trainerPokemonSprite.scale.setTo(1.5, 1.5)
 
 		//alert box created on topmost layer
 		var alertBox = game.add.tileSprite(0, 220, 400, 80, "alertBox");
@@ -16,8 +17,8 @@ var wildPkmnBattle = {
 		// Update text box
 		var wildPokemonDisplayName = game.wildPokemon.commonName;
 		wildPokemonDisplayName = wildPokemonDisplayName.capitalize()
-		var textStyle = { font: 'bold 14px Arial', fill: 'black', align: 'left', wordWrap: true, wordWrapWidth: 200 };
-		game.battleTextDefault = game.add.text(20, 240, `A wild ${wildPokemonDisplayName} appeared!`, textStyle);
+		game.textStyle = { font: 'bold 14px Arial', fill: 'black', align: 'left', wordWrap: true, wordWrapWidth: 200 };
+		game.battleTextDefault = game.add.text(20, 240, `A wild ${wildPokemonDisplayName} appeared!`, game.textStyle);
 		setTimeout(function() {wildPkmnBattle.battleOptions();}, 3000)
 		game.selector = {};
 		game.moveSelector = game.add.sprite(40, 241, 'selector');
@@ -92,6 +93,69 @@ var wildPkmnBattle = {
 	},
 
 	throwPokeball: function() {
+		if (game.move1) {
+			game.move1.visible = false;
+			game.move2.visible = false;
+			game.back.visible = false;
+			game.moveSelector.visible = false;
+		}
+		game.battleTextDefault.visible = false;
+		game.battleTextAction = game.add.text(20,240, `You threw a Pokeball!`, game.textStyle);
+		game.wildPokemonSprite.visible = false;
+		game.pokeballSprite = game.add.sprite(295, 120, 'pokeball', 1)
+		game.pokeballSprite.animations.add('pokeballWobble',[1,2,3,4,3,2], 12);
+		setTimeout(function() {
+			game.pokeballSprite.animations.play('pokeballWobble')
+		}, 1000)
+		setTimeout(function() {
+			game.pokeballSprite.animations.play('pokeballWobble')
+		}, 2000)
+		setTimeout(function() {
+			game.pokeballSprite.animations.play('pokeballWobble')
+			var pokeballRoll = Math.floor(Math.random() * 100 + 1)
+			var wildPokemonHealth = ((game.wildPokemon.baseHealth - game.wildPokemon.currentHealth)/((game.wildPokemon.baseHealth + game.wildPokemon.currentHealth)/2)) * 100
+			if (wildPokemonHealth >= pokeballRoll) {
+				game.battleTextAction.setText(`Gotcha! ${game.wildPokemon.commonName.capitalize()} was caught!`);
+				game.wildPokemon.trainerID = game.userId;
+				game.selectTimer = Date.now() + 3000;
+				wildPkmnBattle.caughtPokemon();
+			} else {
+				game.battleTextAction.setText(`Shoot! It was so close!`);
+				game.pokeballSprite.visible = false;
+				game.wildPokemonSprite.visible = true;
+				setTimeout(function() {
+					game.battleTextAction.visible = false;
+					wildPkmnBattle.battleOptions();
+					// game.battleTextDefault.visible = true;
+				}, 2000);
+			}
+		}, 3000)
+
+	},
+
+	caughtPokemon: function() {
+		$.ajax({
+			url: `${game.FirebaseURL}/pokemon/.json`,
+			type: 'POST',
+			data: JSON.stringify(game.wildPokemon)
+		})
+		.done(function() {
+			console.log("success");
+			if (Date.now() > game.selectTimer) {
+				game.state.start('main');
+			}
+		})
+		.fail(function() {
+			console.log("Error saving caught Pokemon");
+		});
+		
+	},
+
+	trainerPokemonAtck: function() {
+		
+	},
+
+	wildPokemonAtck: function() {
 		
 	},
 
@@ -104,6 +168,7 @@ var wildPkmnBattle = {
 				console.log("fight!");
 				game.selectTimer = Date.now() + 1000;
 			} else if (game.selector.x <= 212 && game.selector.y >= 265) {
+				game.selectTimer = Date.now() + 1000;
 				game.battleTextDefault.setText('This feature is not yet available');
 				setTimeout(function() {
 					var trainerPokemonDisplayName = game.partyPokemon[0].commonName;
@@ -112,13 +177,26 @@ var wildPkmnBattle = {
 				}, 3000)
 			} else if (game.selector.x >= 290 && game.selector.y <= 245) {
 				wildPkmnBattle.throwPokeball();
+				game.selectTimer = Date.now() + 1000;
 				console.log("pokeball");
 			} else if (game.selector.x >= 290 && game.selector.y >= 265) {
-				if (game.currentPokemon.speed > game.wildPokemon.speed) {
-					game.state.start('main')
-				} else if (Math.floor(Math.random() * 50 + 1) <= 75) {
-					game.state.start('main')
+				if (game.currentPokemon.speed > game.wildPokemon.speed) { //if current pokemon is faster than wild pokemon, escape
+					game.selectTimer = Date.now() + 1000;
+					game.battleTextDefault.setText('Got away safely!');
+					setTimeout(function() {
+						game.state.start('main')}, 2000);
+				} else if (game.wildPokemon.speed < game.currentPokemon.speed * 2 && Math.floor(Math.random() * 50 + 1) <= 75) { // if wild pokemon speed is less than double speed of current pokemon, roll for escape, 75% chance
+					game.selectTimer = Date.now() + 1000;
+					game.battleTextDefault.setText('Got away safely!');
+					setTimeout(function() {
+						game.state.start('main')}, 2000);
+				} else if (Math.floor(Math.random() * 50 + 1) <= 40) {  // if wild pokemon speed is more than double speed of current pokemon, roll for escape, 40% chance
+					game.selectTimer = Date.now() + 1000;
+					game.battleTextDefault.setText('Got away safely!');
+					setTimeout(function() {
+						game.state.start('main')}, 2000);
 				} else {
+					game.selectTimer = Date.now() + 1000;
 					game.battleTextDefault.setText("Couldn't escape!");
 					setTimeout(function() {
 						var trainerPokemonDisplayName = game.partyPokemon[0].commonName;
@@ -151,8 +229,10 @@ var wildPkmnBattle = {
 		if (game.actionKey.isDown && game.moveSelector.visible === true && Date.now() > game.selectTimer) {
 			if (game.moveSelector.x <= 50 && game.moveSelector.y <= 245) {
 				console.log(game.currentPokemon.move1);
+				game.selectTimer = Date.now() + 1000;
 			} else if (game.moveSelector.x >= 130 && game.moveSelector.y <= 245) {
 				console.log(game.currentPokemon.move2);
+				game.selectTimer = Date.now() + 1000;
 			} else if (game.moveSelector.x >= 130 && game.moveSelector.y >= 265) {
 				game.moveSelector.visible = false;
 				game.move1.visible = false;
