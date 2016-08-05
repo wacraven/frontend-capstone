@@ -170,6 +170,7 @@ var wildPkmnBattle = {
 	},
 
 	caughtPokemon: function() {
+		game.wildPokemon.currentHp = game.wildPokemon.baseHp;
 		$.ajax({
 			url: `${game.FirebaseURL}/pokemon/.json`,
 			type: 'POST',

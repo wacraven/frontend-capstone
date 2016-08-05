@@ -33,3 +33,7 @@ canvas {
 .hidden {
   display: none;
 }
+
+.directions {
+  font-size: 10px;
+}

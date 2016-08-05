@@ -3,10 +3,13 @@
 [debug] CLI Version:  3.0.4
 [debug] Platform:     darwin
 [debug] Node Version: v4.4.4
-[debug] Time:         Thu Aug 04 2016 21:07:27 GMT-0500 (CDT)
+[debug] Time:         Thu Aug 04 2016 22:14:27 GMT-0500 (CDT)
 [debug] ----------------------------------------------------------------------
 [debug] 
 [debug] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase"]
+[debug] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token
+[debug] <<< HTTP RESPONSE 200
 [debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pokemon-golden-silver 
 [debug] <<< HTTP RESPONSE 200
 [debug] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pokemon-golden-silver/tokens 
@@ -17,3 +20,4 @@
 [info] i  deploying database, hosting
 [info] ✔  database: rules ready to deploy.
 [info] i  hosting: preparing ./ directory for upload...
+[debug] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/pokemon-golden-silver/uploads/-KONgTqjkYPLd1PW550Y?fileCount=8738&message= 
