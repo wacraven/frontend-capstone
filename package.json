@@ -1,0 +1,31 @@
+{
+  "name": "frontend-capstone",
+  "version": "1.0.0",
+  "description": "Pokemon Golden Silver, built with Phaser",
+  "main": "js/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wacraven/frontend-capstone.git"
+  },
+  "author": "W. Alex Craven",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wacraven/frontend-capstone/issues"
+  },
+  "homepage": "https://github.com/wacraven/frontend-capstone#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.1",
+    "gulp-watch": "^4.3.9",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0"
+  },
+  "dependencies": {
+    "jquery": "^3.1.0",
+    "materialize-css": "^0.97.7",
+    "phaser": "^2.6.1"
+  }
+}

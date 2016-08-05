@@ -1,0 +1,39 @@
+#loginBtn {
+  background-color: #FF1C1C;
+}
+
+#logOutBtn {
+  background-color: #FF1C1C;
+  float: right;
+}
+
+canvas {
+  display: block;
+/*  margin: auto;
+*/  margin-bottom: 20px;
+}
+
+.container {
+  width: 400px;
+}
+
+.pkmnHeader-big {
+  display: block;
+  margin: auto;
+  width: 250px;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.pkmnHeader-small {
+  display: inline-block;
+  height: 50px;
+}
+
+.hidden {
+  display: none;
+}
+
+.directions {
+  font-size: 10px;
+}
