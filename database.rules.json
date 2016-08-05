@@ -1,0 +1,15 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "pokemon": {
+      ".indexOn": "trainerID"
+    },
+    "trainers": {
+      ".indexOn": "uid"
+    },
+    "backupPokemon": {
+      ".indexOn": "id"
+    }
+  }
+}

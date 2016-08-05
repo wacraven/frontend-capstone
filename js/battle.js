@@ -370,6 +370,13 @@ var wildPkmnBattle = {
 			}, 4000);
 		}
 
+		if (game.currentPokemon.currentAtck < 15) {
+			game.currentPokemon.currentAtck = 15
+		};
+		if (game.wildPokemon.currentAtck < 15) {
+			game.wildPokemon.currentAtck = 15
+		};
+
 		// check to see where the selector is when spacebar is pressed
 		if (game.actionKey.isDown && game.selector.visible === true && Date.now() > game.selectTimer) {
 			if (game.selector.x <= 212 && game.selector.y <= 245) {
