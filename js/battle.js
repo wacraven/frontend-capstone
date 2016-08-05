@@ -50,7 +50,7 @@ var wildPkmnBattle = {
 		// Update text box
 		var wildPokemonDisplayName = game.wildPokemon.commonName;
 		wildPokemonDisplayName = wildPokemonDisplayName.capitalize()
-		game.textStyle = { font: 'bold 14px Arial', fill: 'black', align: 'left', wordWrap: true, wordWrapWidth: 200 };
+		game.textStyle = { font: 'bold 14px Arial', fill: 'black', align: 'left', wordWrap: true, wordWrapWidth: 175 };
 		game.battleTextDefault = game.add.text(20, 240, `A wild ${wildPokemonDisplayName} appeared!`, game.textStyle);
 		setTimeout(function() {wildPkmnBattle.battleOptions();}, 3000)
 		game.selector = {};
@@ -130,17 +130,18 @@ var wildPkmnBattle = {
 	},
 
 	throwPokeball: function() {
-		if (game.move1) {
-			game.move1.visible = false;
-			game.move2.visible = false;
-			game.back.visible = false;
-			game.moveSelector.visible = false;
-		}
+		// if (game.move1) {
+		// 	game.move1.visible = false;
+		// 	game.move2.visible = false;
+		// 	game.back.visible = false;
+		// 	game.moveSelector.visible = false;
+		// }
 		game.battleTextDefault.visible = false;
 		game.battleTextAction = game.add.text(20,240, `You threw a Pokeball!`, game.textStyle);
 		game.wildPokemonSprite.visible = false;
 		game.pokeballSprite = game.add.sprite(295, 120, 'pokeball', 1)
 		game.pokeballSprite.animations.add('pokeballWobble',[1,2,3,4,3,2], 12);
+		game.pokeballSprite.animations.play('pokeballWobble')
 		setTimeout(function() {
 			game.pokeballSprite.animations.play('pokeballWobble')
 		}, 1000)
@@ -148,13 +149,11 @@ var wildPkmnBattle = {
 			game.pokeballSprite.animations.play('pokeballWobble')
 		}, 2000)
 		setTimeout(function() {
-			game.pokeballSprite.animations.play('pokeballWobble')
 			var pokeballRoll = Math.floor(Math.random() * 100 + 1)
 			var wildPokemonHealth = ((game.wildPokemon.baseHp - game.wildPokemon.currentHp)/((game.wildPokemon.baseHp + game.wildPokemon.currentHp)/2)) * 100
 			if (wildPokemonHealth >= pokeballRoll) {
 				game.battleTextAction.setText(`Gotcha! ${game.wildPokemon.commonName.capitalize()} was caught!`);
 				game.wildPokemon.trainerID = game.userId;
-				game.selectTimer = Date.now() + 3000;
 				wildPkmnBattle.caughtPokemon();
 			} else {
 				game.battleTextAction.setText(`Shoot! It was so close!`);
@@ -162,7 +161,7 @@ var wildPkmnBattle = {
 				game.wildPokemonSprite.visible = true;
 				setTimeout(function() {
 					game.battleTextAction.visible = false;
-					wildPkmnBattle.battleOptions();
+					// wildPkmnBattle.battleOptions();
 					// game.battleTextDefault.visible = true;
 				}, 2000);
 			}
@@ -178,9 +177,9 @@ var wildPkmnBattle = {
 		})
 		.done(function() {
 			console.log("success");
-			if (Date.now() > game.selectTimer) {
+			setTimeout(function() {
 				game.state.start('main');
-			}
+			}, 2000)
 		})
 		.fail(function() {
 			console.log("Error saving caught Pokemon");
@@ -188,12 +187,157 @@ var wildPkmnBattle = {
 		
 	},
 
+	speedChecker: function(move) {
+		game.optionBox.visible = false;
+		game.fightOption.visible = false;
+		game.pokemonPartyOption.visible = false;
+		game.bagOption.visible = false;
+		game.runOption.visible = false;
+		game.selector.visible = false;
+		game.moveSelector.visible = false;
+		game.move1.visible = false;
+		game.move2.visible = false;
+		game.back.visible = false;
+		game.moveSelector.visible = false;
+		if (game.currentPokemon.currentSpeed >= game.wildPokemon.currentSpeed) {
+			wildPkmnBattle.trainerPokemonAtck(move);
+			setTimeout(function() {
+				if (game.wildPokemon.currentHp > 0) {
+					console.log("completed trainer move, now wild pkmn");
+					wildPkmnBattle.wildPokemonAtck();
+				} else {
+					//set text to victory
+					setTimeout(function() {
+						game.state.start('main');
+					}, 2000)
+				}
+			}, 4000)
+		} else {
+			wildPkmnBattle.wildPokemonAtck();
+			setTimeout(function() {
+				if (game.currentPokemon.currentHp > 0) {
+					console.log("completed wild pkmn move, now trainer");
+					wildPkmnBattle.trainerPokemonAtck(move);
+				} else {
+					//set text ${currentPokemon.commonName.capitalize()} fainted!
+					setTimeout(function() {
+						// game.state.start('main');
+						//switch pokemon
+					}, 2000)
+				}
+			}, 4000)
+		}
+		setTimeout(function () {
+			wildPkmnBattle.battleOptions();
+		}, 8000);
+	},
+
 	trainerPokemonAtck: function(move) {
-		game.currentPokemon
+		console.log("trainerPokemonAtck called");
+		game.battleTextDefault.visible = true;
+		game.battleTextDefault.setText(`${game.currentPokemon.commonName.capitalize()} used ${move.capitalize()}!`)
+		if (move === "tackle") {
+			var level = 5
+			var attack = game.currentPokemon.currentAtck
+			var movePower = 50;
+			var defendersDef = game.wildPokemon.currentDef
+			var sameTypeBonus = 1;
+			var typeDamModifier = 1;
+			var randNum = Math.floor(Math.random() * (255 - 217) + 217);
+			var damageOutput = wildPkmnBattle.damageCalculator(level, attack, movePower, defendersDef, sameTypeBonus, typeDamModifier, randNum)
+			console.log("used tackle!", damageOutput);
+			game.wildPokemon.currentHp = game.wildPokemon.currentHp - damageOutput;
+		} else {
+			game.wildPokemon.currentAtck = game.wildPokemon.currentAtck - 15;
+			setTimeout(function () {
+				game.battleTextDefault.setText(`Foe ${game.wildPokemon.commonName.capitalize()}'s attack was lowered! `)
+			}, 2000);
+		};
 	},
 
 	wildPokemonAtck: function() {
-		
+		console.log("wildPokemonAtck called");
+		var movesAvail = ['tackle', 'growl']
+		var move = movesAvail[Math.floor(Math.random() * movesAvail.length)]
+		game.battleTextDefault.visible = true;
+		game.battleTextDefault.setText(`Foe ${game.wildPokemon.commonName.capitalize()} used ${move.capitalize()}!`)
+		if (move === "tackle") {
+			var level = 4
+			var attack = game.wildPokemon.currentAtck
+			var movePower = 50;
+			var defendersDef = game.currentPokemon.currentDef
+			var sameTypeBonus = 1;
+			var typeDamModifier = 1;
+			var randNum = Math.floor(Math.random() * (255 - 217) + 217);
+			var damageOutput = wildPkmnBattle.damageCalculator(level, attack, movePower, defendersDef, sameTypeBonus, typeDamModifier, randNum)
+			console.log("foe used tackle!", damageOutput);
+			game.currentPokemon.currentHp = game.currentPokemon.currentHp - damageOutput;
+		} else {
+			game.currentPokemon.currentAtck = game.currentPokemon.currentAtck - 15;
+			setTimeout(function () {
+				game.battleTextDefault.setText(`${game.currentPokemon.commonName.capitalize()}'s attack was lowered! `)
+			}, 2000);
+		};
+		// setTimeout(function () {
+		// 	wildPkmnBattle.battleOptions();
+		// }, 8000);
+	},
+
+	damageCalculator: function(A, B, C, D, X, Y, Z) {
+		// Credit University of Miami math dept: https://www.math.miami.edu/~jam/azure/compendium/battdam.htm
+		// A = attacker's Level
+		// B = attacker's Attack or Special
+		// C = attack Power
+		// D = defender's Defense or Special
+		// X = same-Type attack bonus (1 or 1.5)
+		// Y = Type modifiers (40, 20, 10, 5, 2.5, or 0)
+		// Z = a random number between 217 and 255
+		var val1 = (((2 * A) / 5) + 2) * B * C
+		var val2 = val1 / D
+		var val3 = (val2 / 50) + 2
+		var val4 = val3 * X
+		var val5 = val4 * Y
+		var val6 = val5 * Z
+		var totalVal = val6 / 255
+
+		return Math.floor(2 * totalVal)
+	},
+
+	currentPokemonUpdate: function() {
+		var pokemonUpdated = {
+			pokedexId: game.currentPokemon.pokedexId,
+			commonName: game.currentPokemon.commonName,
+			frontSprite: `/assets/sprites/pokemon/${game.currentPokemon.commonName}-front.png`,
+			backSprite: `/assets/sprites/pokemon/${game.currentPokemon.commonName}-back.png`,
+			// ability: wildPkmnAbilityGetter(game.currentPokemon),
+			baseSpeed: game.currentPokemon.baseSpeed,
+			baseSpecDef: game.currentPokemon.baseSpecDef,
+			baseSpecAtck: game.currentPokemon.baseSpecAtck,
+			baseDef: game.currentPokemon.baseDef,
+			baseAtck: game.currentPokemon.baseAtck,
+			baseHp: game.currentPokemon.baseHp,
+			currentSpeed: game.currentPokemon.baseSpeed,
+			currentSpecDef: game.currentPokemon.baseSpecDef,
+			currentSpecAtck: game.currentPokemon.baseSpecAtck,
+			currentDef: game.currentPokemon.baseDef,
+			currentAtck: game.currentPokemon.baseAtck,
+			currentHp: game.currentPokemon.currentHp,
+			move1: "tackle",
+			move2: "growl",
+			trainerID: user.uid,
+			pokemonKey: game.currentPokemon.pokemonKey
+		}
+		$.ajax({
+			url: `${game.FirebaseURL}/pokemon/${game.currentPokemon.pokemonKey}.json`,
+			type: 'PUT',
+			data: JSON.stringify(pokemonUpdated),
+		})
+		.done(function() {
+			console.log("pokemon successfully updated");
+		})
+		.fail(function() {
+			console.log("error updating pokemon");
+		});
 	},
 
 	update: function() {
@@ -202,14 +346,38 @@ var wildPkmnBattle = {
 		game.trainerPokemonHealthBar.setPercent(100 - (((game.currentPokemon.baseHp - game.currentPokemon.currentHp)/((game.currentPokemon.baseHp + game.currentPokemon.currentHp)/2)) * 100))
 		game.wildPokemonHealthBar.setPercent(100 - (((game.wildPokemon.baseHp - game.wildPokemon.currentHp)/((game.wildPokemon.baseHp + game.wildPokemon.currentHp)/2)) * 100))
 
+		//check health of pokemon
+		if (game.currentPokemon.currentHp <= 0) {
+			//start main state
+			wildPkmnBattle.currentPokemonUpdate();
+			game.selectTimer = Date.now() + 6000;
+			setTimeout(function() {
+				game.battleTextDefault.setText(`Oh no! ${game.currentPokemon.commonName.capitalize()} fainted!`)
+			}, 2000);
+			setTimeout(function() {
+				game.state.start('main');
+			}, 6000);
+
+		} else if (game.wildPokemon.currentHp <= 0) {
+			//star main state
+			wildPkmnBattle.currentPokemonUpdate();
+			game.selectTimer = Date.now() + 6000;
+			setTimeout(function() {
+				game.battleTextDefault.setText(`Foe ${game.wildPokemon.commonName.capitalize()} fainted!`)
+			}, 2000);
+			setTimeout(function() {
+				game.state.start('main');
+			}, 4000);
+		}
+
 		// check to see where the selector is when spacebar is pressed
 		if (game.actionKey.isDown && game.selector.visible === true && Date.now() > game.selectTimer) {
 			if (game.selector.x <= 212 && game.selector.y <= 245) {
 				wildPkmnBattle.fightMovesOptions()
 				console.log("fight!");
-				game.selectTimer = Date.now() + 1000;
+				game.selectTimer = Date.now() + 500;
 			} else if (game.selector.x <= 212 && game.selector.y >= 265) {
-				game.selectTimer = Date.now() + 1000;
+				game.selectTimer = Date.now() + 500;
 				game.battleTextDefault.setText('This feature is not yet available');
 				setTimeout(function() {
 					var trainerPokemonDisplayName = game.currentPokemon.commonName;
@@ -218,26 +386,26 @@ var wildPkmnBattle = {
 				}, 3000)
 			} else if (game.selector.x >= 290 && game.selector.y <= 245) {
 				wildPkmnBattle.throwPokeball();
-				game.selectTimer = Date.now() + 1000;
+				game.selectTimer = Date.now() + 500;
 				console.log("pokeball");
 			} else if (game.selector.x >= 290 && game.selector.y >= 265) {
 				if (game.currentPokemon.speed > game.wildPokemon.speed) { //if current pokemon is faster than wild pokemon, escape
-					game.selectTimer = Date.now() + 1000;
+					game.selectTimer = Date.now() + 500;
 					game.battleTextDefault.setText('Got away safely!');
 					setTimeout(function() {
 						game.state.start('main')}, 2000);
 				} else if (game.wildPokemon.speed < game.currentPokemon.speed * 2 && Math.floor(Math.random() * 50 + 1) <= 75) { // if wild pokemon speed is less than double speed of current pokemon, roll for escape, 75% chance
-					game.selectTimer = Date.now() + 1000;
+					game.selectTimer = Date.now() + 500;
 					game.battleTextDefault.setText('Got away safely!');
 					setTimeout(function() {
 						game.state.start('main')}, 2000);
 				} else if (Math.floor(Math.random() * 50 + 1) <= 40) {  // if wild pokemon speed is more than double speed of current pokemon, roll for escape, 40% chance
-					game.selectTimer = Date.now() + 1000;
+					game.selectTimer = Date.now() + 500;
 					game.battleTextDefault.setText('Got away safely!');
 					setTimeout(function() {
 						game.state.start('main')}, 2000);
 				} else {
-					game.selectTimer = Date.now() + 1000;
+					game.selectTimer = Date.now() + 500;
 					game.battleTextDefault.setText("Couldn't escape!");
 					setTimeout(function() {
 						var trainerPokemonDisplayName = game.currentPokemon.commonName;
@@ -269,17 +437,17 @@ var wildPkmnBattle = {
 		// check to see where the move selector is when spacebar is pressed
 		if (game.actionKey.isDown && game.moveSelector.visible === true && Date.now() > game.selectTimer) {
 			if (game.moveSelector.x <= 50 && game.moveSelector.y <= 245) {
-				console.log(game.currentPokemon.move1);
-				game.selectTimer = Date.now() + 1000;
+				wildPkmnBattle.speedChecker(game.currentPokemon.move1)
+				game.selectTimer = Date.now() + 500;
 			} else if (game.moveSelector.x >= 130 && game.moveSelector.y <= 245) {
-				console.log(game.currentPokemon.move2);
-				game.selectTimer = Date.now() + 1000;
+				wildPkmnBattle.speedChecker(game.currentPokemon.move2)
+				game.selectTimer = Date.now() + 500;
 			} else if (game.moveSelector.x >= 130 && game.moveSelector.y >= 265) {
 				game.moveSelector.visible = false;
 				game.move1.visible = false;
 				game.move2.visible = false;
 				game.back.visible = false;
-				game.selectTimer = Date.now() + 1000;
+				game.selectTimer = Date.now() + 500;
 				wildPkmnBattle.battleOptions();
 			};
 		};

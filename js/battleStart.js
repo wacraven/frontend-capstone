@@ -97,11 +97,17 @@ var wildBattleStart = {
 
 	trainerPokemonSort: function(result) {
 		game.partyPokemon = [];
+		var i = 0
 		for(var pokemon in result){
 		    game.partyPokemon.push(result[pokemon]);
 		 }
 		console.log("Trainer Loaded!", game.partyPokemon);
-
+		Object.keys(result).forEach(function(key){
+    		console.log("done");
+    		result[key].pokemonKey = key;
+   			// game.partyPokemon[i].FBKey = result[key].pokemonKey;
+			i++;
+		});
 	}
 }
 
