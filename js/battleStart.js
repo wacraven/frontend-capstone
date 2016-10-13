@@ -1,10 +1,26 @@
 "use strict";
 
+let trainerLoaded;
+let battleStarted
+
 var wildBattleStart = {
 	create: function() {
+		trainerLoaded = false
+		battleStarted = false
 		var loading = game.add.sprite(0, 0, 'loading');
 		loading.animations.add('loadLoop');
 		loading.animations.play('loadLoop', 4, true);
+	},
+
+	battleReady: function() {
+		if (battleStarted === false) {
+			if (trainerLoaded) {
+				battleStarted = true
+				game.state.start('wildPkmnBattle');
+			} else {
+				console.log('Not yet ready. Trying agin in 50ms');
+			}
+		}
 	},
 
 	randomEncounter: function(location) {
@@ -23,7 +39,7 @@ var wildBattleStart = {
 			wildBattleStart.trainerPokemonGet();
 			playerPos.x = player.body.x;
 			playerPos.y = player.body.y;
-			console.log(playerPos);
+			console.log('playerPos',playerPos);
 		} else {
 			console.log("no encounter");
 		}
@@ -37,7 +53,7 @@ var wildBattleStart = {
 		})
 		.done(function(result) {
 			wildBattleStart.battleSetup(result);
-			game.state.start('wildPkmnBattle');
+			setInterval(wildBattleStart.battleReady, 50)
 		})
 		.fail(function() {
 			console.log("error");
@@ -78,7 +94,7 @@ var wildBattleStart = {
 		this.move2 = "growl";
 		// this.primaryType = game.wildPokemonArray[0].types[]
 	},
-	
+
 	// wildPkmnAbilityGetter: function(game.wildPokemonArray[0]) {
 	// 	return "abilityTest"
 	// },
@@ -102,6 +118,7 @@ var wildBattleStart = {
 		    game.partyPokemon.push(result[pokemon]);
 		 }
 		console.log("Trainer Loaded!", game.partyPokemon);
+		trainerLoaded = true
 		Object.keys(result).forEach(function(key){
     		console.log("done");
     		result[key].pokemonKey = key;
@@ -110,12 +127,3 @@ var wildBattleStart = {
 		});
 	}
 }
-
-
-
-
-
-
-
-
-

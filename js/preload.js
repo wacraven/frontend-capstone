@@ -20,7 +20,7 @@ var preloadState = {
 		game.load.image("grass6", "/assets/maps/tilesets/grass/tallGrass-patch-6.png")
 
 		// load player
-		game.load.spritesheet('hero', '/assets/sprites/hero/gold.png', 17, 25);
+		game.load.spritesheet('hero', '/assets/sprites/hero/hero.png', 19, 25);
 
 		// load battle images
 		game.load.image('battleBG', '/assets/maps/battleBackgrounds/field.png');
@@ -60,6 +60,9 @@ var preloadState = {
 
 		// load other assets
 		game.load.spritesheet('loading', '/assets/loading.jpg', 400, 300)
+		game.load.audio('newBarkMusic', [''])
+		game.load.audio('routeMusic', [''])
+		game.load.audio('cherrygroveMusic', [''])
 
 	},
 	create: function() {

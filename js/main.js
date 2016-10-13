@@ -22,6 +22,7 @@ var pokemonInGrass3 = [10, 19, 56]
 var pokemonInGrass4 = [16, 13, 39]
 var pokemonInGrass5 = [56, 19, 35]
 var pokemonInGrass6 = [16, 19, 25]
+let playerFacing
 
 var main = {
 	create: function() {
@@ -39,7 +40,7 @@ var main = {
 		layer = overworld.createLayer("Layer 2");
 		layer = overworld.createLayer("Layer 3");
 		layer = overworld.createLayer("Layer 4");
-		
+
 		grassLayer = overworld.createLayer("Grass Layer"); //create layer containing only tall grass
 		tallGrass1 = game.add.sprite(930, 1335 , 'grass1', 1)
 		game.physics.arcade.enable(tallGrass1)
@@ -58,7 +59,11 @@ var main = {
 		layer = overworld.createLayer("Sprite Layer");
 
 		player = game.add.sprite(playerPos.x, playerPos.y, 'hero', 1); // create player
-	    game.physics.arcade.enable(player); // enable physics
+	  game.physics.arcade.enable(player); // enable physics
+		player.animations.add('down', [0, 1, 2, 1], 10, true);
+		player.animations.add('left', [3, 4, 5, 4], 10, true);
+		player.animations.add('up', [6, 7, 8, 7], 10, true);
+		player.animations.add('right', [9, 10, 11, 10], 10, true);
 
 		layer = overworld.createLayer("Overhead 1");
 
@@ -73,7 +78,7 @@ var main = {
 	    game.camera.follow(player);
 
 	    player.body.collideWorldBounds = true;
-	    
+
 	    cursors = game.input.keyboard.createCursorKeys();
 
 	    game.actionKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -107,18 +112,41 @@ var main = {
 		//movement
 	    player.body.velocity.y = 0;
 	    player.body.velocity.x = 0;
-	 
+
 	    if(cursors.up.isDown) {
 	      player.body.velocity.y -= 100;
+				player.animations.play('up');
+				playerFacing = 'up'
 	    }
 	    else if(cursors.down.isDown) {
 	      player.body.velocity.y += 100;
+				player.animations.play('down');
+				playerFacing = 'down'
 	    }
-	    if(cursors.left.isDown) {
+	    else if(cursors.left.isDown) {
 	      player.body.velocity.x -= 100;
+				player.animations.play('left');
+				playerFacing = 'left'
 	    }
 	    else if(cursors.right.isDown) {
 	      player.body.velocity.x += 100;
+				player.animations.play('right');
+				playerFacing = 'right'
 	    }
+			else {
+        player.animations.stop();
+				if (playerFacing === 'up') {
+					player.frame = 7;
+				}
+				else if (playerFacing === 'down') {
+					player.frame = 1;
+				}
+				else if (playerFacing === 'left') {
+					player.frame = 4;
+				}
+				else if (playerFacing === 'right') {
+					player.frame = 10;
+				}
+			}
 	}
 }
